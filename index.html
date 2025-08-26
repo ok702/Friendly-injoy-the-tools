@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Friends InJoy — The Tool</title>
+  <meta name="description" content="Friends InJoy — unified hub: search, friendly AI chat, video/reels feed and many tools in one place." />
+  <!-- favicon (svg data URI) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect rx='12' width='64' height='64' fill='%237c5cff'/%3E%3Ctext x='50%25' y='54%25' font-size='28' font-family='Arial' fill='white' text-anchor='middle'>F</text%3E%3C/svg%3E">
+  <style>
+    :root{
+      --bg:#071226; --card:#071522; --muted:#e6eefb; --muted-2:rgba(230,238,251,0.7);
+      --accent1:#7c5cff; --accent2:#00e0a8; --glass:rgba(255,255,255,0.04);
+      --radius:14px; --maxw:1200px;
+    }
+    html.light{--bg:#f7f9fc; --card:#ffffff; --muted:#08303c; --muted-2:rgba(8,48,60,0.7); --glass:rgba(0,0,0,0.04)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;color:var(--muted);background:radial-gradient(800px 300px at 10% 10%, rgba(124,92,255,0.06), transparent), var(--bg);-webkit-font-smoothing:antialiased;min-height:100vh}
+    .container{max-width:var(--maxw);margin:24px auto;padding:18px}
+    header{display:flex;gap:14px;align-items:center;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);backdrop-filter: blur(6px)}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));display:grid;place-items:center;color:white;font-weight:800;font-size:20px}
+    .brand h1{margin:0;font-size:18px}
+    .brand p{margin:0;font-size:12px;color:var(--muted-2)}
+    .searchbar{flex:1;display:flex;justify-content:center}
+    .search{width:100%;max-width:840px;display:flex;gap:8px;align-items:center;padding:10px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border:1px solid var(--glass)}
+    .search input{flex:1;border:0;background:transparent;color:var(--muted);font-size:15px;outline:none;padding:6px}
+    .search button{padding:9px 12px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;cursor:pointer}
+    .actions{display:flex;gap:8px;align-items:center}
+    .btn-ghost{padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);cursor:pointer}
+    .main{display:flex;gap:18px;margin-top:18px;align-items:flex-start}
+    .left{flex:1}
+    .right{width:320px}
+    .hero{padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border:1px solid var(--glass)}
+    .hero h2{margin:0;font-size:22px}
+    .hero p{margin:8px 0 0;color:var(--muted-2)}
+    .tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+    @media (max-width:1000px){.tools-grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:640px){.main{flex-direction:column}.tools-grid{grid-template-columns:1fr}}
+    .tool-card{background:var(--card);padding:12px;border-radius:12px;border:1px solid var(--glass);min-height:120px;display:flex;flex-direction:column;justify-content:space-between;transition:transform .22s,ease .22s}
+    .tool-card:hover{transform:translateY(-6px)}
+    .tool-head{display:flex;gap:10px;align-items:center}
+    .tool-logo{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));display:grid;place-items:center;font-weight:800}
+    .tool-card h3{margin:0;font-size:15px}
+    .tool-card p{margin:6px 0 0;color:var(--muted-2);font-size:13px}
+    .tool-actions{display:flex;gap:8px;margin-top:10px}
+    .btn-primary{padding:8px 10px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;font-weight:700;cursor:pointer;text-decoration:none}
+    .small{font-size:13px;color:var(--muted-2)}
+    .feed{margin-top:14px;display:grid;gap:12px}
+    .feed-item{background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);padding:10px;border-radius:10px;border:1px solid var(--glass);display:flex;gap:10px;align-items:flex-start}
+    .feed-thumb{width:140px;height:84px;background:#020a12;border-radius:8px;display:grid;place-items:center;color:var(--muted-2);font-size:13px}
+    .chat-box{padding:12px;border-radius:10px;border:1px solid var(--glass);background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
+    .messages{height:270px;overflow:auto;padding:8px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.005), transparent)}
+    .msg{padding:8px 10px;border-radius:10px;margin-bottom:8px;max-width:84%;font-size:14px}
+    .msg.bot{background:rgba(255,255,255,0.03);color:var(--muted-2)}
+    .msg.user{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;margin-left:auto}
+    footer{margin-top:18px;padding:12px;text-align:center;color:var(--muted-2)}
+    /* focus */
+    :focus{outline:3px solid rgba(124,92,255,0.14);outline-offset:3px}
+  </style>
+</head>
+<body>
+  <div class="container" role="document">
+    <header>
+      <div class="brand" aria-label="site brand">
+        <div class="logo">F</div>
+        <div>
+          <h1>Friends InJoy — The Tool</h1>
+          <p>কেন সব টুল বেছে নিয়ে এক জায়গায় — search • chat • feeds • tools</p>
+        </div>
+      </div>
+
+      <div class="searchbar" role="search">
+        <div class="search" aria-label="site search">
+          <input id="q" placeholder="Search site (tools, videos, posts, e.g. youtube, ai, amazon)" aria-label="search input" />
+          <button id="searchBtn">Search</button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="theme" class="btn-ghost" title="Toggle theme">🌓</button>
+        <button id="favAll" class="btn-ghost" title="Open favorites">★</button>
+      </div>
+    </header>
+
+    <main class="main" role="main">
+      <section class="left">
+        <div class="hero">
+          <h2>আপনার নিজের Hub — Search, Chat & Feeds</h2>
+          <p class="small">নীচে আছে অনলাইন থেকে আসা বিভিন্ন টুল ও mixed feed — YouTube, Instagram, Facebook, Twitter-style posts (embed placeholders). পরবর্তীতে এগুলোকে সার্ভারলেস API দিয়ে লাইভ করতে পারবেন।</p>
+
+          <div class="tools-grid" id="toolsGrid" aria-live="polite">
+            <!-- Tools: open in new tabs -->
+            <div class="tool-card">
+              <div class="tool-head">
+                <div class="tool-logo">YT</div>
+                <div>
+                  <h3>YouTube</h3>
+                  <p class="small">Watch videos & playlists.</p>
+                </div>
+              </div>
+              <div class="tool-actions">
+                <a class="btn-primary" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">Open</a>
+                <a class="btn-ghost" href="https://www.youtube.com/feed/trending" target="_blank" rel="noopener noreferrer">Trending</a>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <div class="tool-head">
+                <div class="tool-logo">G</div>
+                <div>
+                  <h3>Google</h3>
+                  <p class="small">Search the web (external Google).</p>
+                </div>
+              </div>
+              <div class="tool-actions">
+                <a class="btn-primary" href="https://www.google.com" target="_blank" rel="noopener noreferrer">Open</a>
+                <a class="btn-ghost" href="https://www.google.com/search?q=news" target="_blank" rel="noopener noreferrer">News</a>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <div class="tool-head">
+                <div class="tool-logo">TT</div>
+                <div>
+                  <h3>TikTok</h3>
+                  <p class="small">Short vertical videos & trends.</p>
+                </div>
+              </div>
+              <div class="tool-actions">
+                <a class="btn-primary" href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer">Open</a>
+                <a class="btn-ghost" href="https://www.tiktok.com/discover" target="_blank" rel="noopener noreferrer">Discover</a>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <div class="tool-head">
+                <div class="tool-logo">IG</div>
+                <div>
+                  <h3>Instagram</h3>
+                  <p class="small">Photos & reels.</p>
+                </div>
+              </div>
+              <div class="tool-actions">
+                <a class="btn-primary" href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">Open</a>
+                <a class="btn-ghost" href="https://www.instagram.com/explore" target="_blank" rel="noopener noreferrer">Explore</a>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <div class="tool-head">
+                <div class="tool-logo">FB</div>
+                <div>
+                  <h3>Facebook</h3>
+                  <p class="small">Social feed & groups.</p>
+                </div>
+              </div>
+              <div class="tool-actions">
+                <a class="btn-primary" href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">Open</a>
+                <a class="btn-ghost" href="https://m.facebook.com" target="_blank" rel="noopener noreferrer">Mobile</a>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <div class="tool-head">
+                <div class="tool-logo">TW</div>
+                <div>
+                  <h3>Twitter / X</h3>
+                  <p class="small">Micro-posts & trends (X).</p>
+                </div>
+              </div>
+              <div class="tool-actions">
+                <a class="btn-primary" href="https://twitter.com" target="_blank" rel="noopener noreferrer">Open</a>
+                <a class="btn-ghost" href="https://twitter.com/explore" target="_blank" rel="noopener noreferrer">Explore</a>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <div class="tool-head">
+                <div class="tool-logo">AM</div>
+                <div>
+                  <h3>Amazon</h3>
+                  <p class="small">Shop products (affiliate later).</p>
+                </div>
+              </div>
+              <div class="tool-actions">
+                <a class="btn-primary" href="https://www.amazon.com" target="_blank" rel="noopener noreferrer">Open</a>
+                <a class="btn-ghost" href="https://www.amazon.com/gp/goldbox" target="_blank" rel="noopener noreferrer">Deals</a>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <div class="tool-head">
+                <div class="tool-logo">GH</div>
+                <div>
+                  <h3>GitHub</h3>
+                  <p class="small">Code hosting & repo explorer.</p>
+                </div>
+              </div>
+              <div class="tool-actions">
+                <a class="btn-primary" href="https://github.com" target="_blank" rel="noopener noreferrer">Open</a>
+                <a class="btn-ghost" href="https://github.com/explore" target="_blank" rel="noopener noreferrer">Explore</a>
+              </div>
+            </div>
+
+            <div class="tool-card">
+              <div class="tool-head">
+                <div class="tool-logo">AI</div>
+                <div>
+                  <h3>Friendly Chat (Prototype)</h3>
+                  <p class="small">Chat like ChatGPT — local demo here (replace with model API later).</p>
+                </div>
+              </div>
+              <div class="tool-actions">
+                <button class="btn-primary" id="openChat">Open Chat</button>
+                <a class="btn-ghost" href="https://platform.openai.com/docs" target="_blank" rel="noopener noreferrer">API Docs</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mixed feed: sample embeds / placeholders -->
+          <h3 style="margin-top:18px">Mixed Feed — Videos & Posts</h3>
+          <div class="feed" id="feed">
+            <!-- YouTube embedded video -->
+            <div class="feed-item">
+              <div class="feed-thumb">YouTube</div>
+              <div>
+                <strong>Sample YouTube Video</strong>
+                <p class="small">Embedded example — click Open to view on YouTube.</p>
+                <div style="margin-top:8px"><a class="btn-primary" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener noreferrer">Open on YouTube</a></div>
+              </div>
+            </div>
+
+            <!-- Instagram placeholder -->
+            <div class="feed-item">
+              <div class="feed-thumb">Instagram</div>
+              <div>
+                <strong>Instagram Reels</strong>
+                <p class="small">Placeholder. For live embed use Instagram's embed code or Graph API (requires app & token).</p>
+                <div style="margin-top:8px"><a class="btn-primary" href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">Open Instagram</a></div>
+              </div>
+            </div>
+
+            <!-- TikTok placeholder -->
+            <div class="feed-item">
+              <div class="feed-thumb">TikTok</div>
+              <div>
+                <strong>TikTok Short</strong>
+                <p class="small">Placeholder for TikTok content. Embed script needed for live playback.</p>
+                <div style="margin-top:8px"><a class="btn-primary" href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer">Open TikTok</a></div>
+              </div>
+            </div>
+
+            <!-- Twitter/X placeholder -->
+            <div class="feed-item">
+              <div class="feed-thumb">X</div>
+              <div>
+                <strong>Twitter Post</strong>
+                <p class="small">Placeholder for tweet. For live, use Twitter embed widgets.</p>
+                <div style="margin-top:8px"><a class="btn-primary" href="https://twitter.com" target="_blank" rel="noopener noreferrer">Open X</a></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <aside class="right">
+          <div class="chat-box">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <strong>Friendly Chat</strong>
+              <span class="small">Prototype</span>
+            </div>
+            <div class="messages" id="messages" aria-live="polite">
+              <div class="msg bot">হ্যালো! আমি Friends InJoy-এর বট — জিজ্ঞেস করুন: \"hosting\" বা \"design tips\" বা \"html snippet\"।</div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input id="chatInput" placeholder="Type your message..." style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--glass);background:transparent;color:var(--muted)" />
+              <button id="send" class="btn-primary">Send</button>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:8px">
+              <button id="saveFav" class="btn-ghost">Save Favorite</button>
+              <button id="openFavorites" class="btn-ghost">Open Favorites</button>
+            </div>
+          </div>
+
+          <div style="height:12px"></div>
+
+          <div class="hero small" style="padding:10px">
+            <strong>Quick Actions</strong>
+            <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+              <button id="openTop" class="btn-primary">Open Top Sites</button>
+              <button id="copyHome" class="btn-ghost">Copy Home Link</button>
+              <a class="btn-ghost" href="mailto:you@yourdomain.com?subject=Friends%20InJoy%20Feedback">Send Feedback</a>
+            </div>
+          </div>
+
+        </aside>
+      </section>
+    </main>
+
+    <footer>
+      © <span id="year"></span> Friends InJoy — Prototype. Links open in new tabs for safety. Later we can link APIs to make search & chat real.
+    </footer>
+  </div>
+
+  <script>
+    // Basic interactions: theme, search, chat simulate, favorites (localStorage)
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // theme
+    const themeBtn = document.getElementById('theme');
+    const html = document.documentElement;
+    if(localStorage.getItem('fi_theme') === 'light') html.classList.add('light');
+    themeBtn.addEventListener('click', ()=> {
+      const isLight = html.classList.toggle('light');
+      localStorage.setItem('fi_theme', isLight ? 'light' : 'dark');
+    });
+
+    // simple client-side search (site tools + feed)
+    const searchBtn = document.getElementById('searchBtn');
+    const qInput = document.getElementById('q');
+    const index = [
+      {k:['youtube','video'], title:'YouTube', url:'https://www.youtube.com'},
+      {k:['google','search'], title:'Google', url:'https://www.google.com'},
+      {k:['tiktok','short'], title:'TikTok', url:'https://www.tiktok.com'},
+      {k:['instagram','photo','reel'], title:'Instagram', url:'https://www.instagram.com'},
+      {k:['facebook','social'], title:'Facebook', url:'https://www.facebook.com'},
+      {k:['twitter','x'], title:'Twitter / X', url:'https://twitter.com'},
+      {k:['amazon','shop'], title:'Amazon', url:'https://www.amazon.com'},
+      {k:['github','code'], title:'GitHub', url:'https://github.com'},
+      {k:['chatgpt','ai','assistant'], title:'ChatGPT', url:'https://chat.openai.com'}
+    ];
+    searchBtn.addEventListener('click', ()=> {
+      const q = (qInput.value || '').trim().toLowerCase();
+      if(!q) { alert('Search e.g.: youtube, ai, amazon'); return; }
+      const found = index.find(it => it.k.some(k => q.includes(k)) || it.title.toLowerCase().includes(q));
+      if(found) window.open(found.url, '_blank', 'noopener');
+      else alert('Kono match paoa jay nai — try different keyword (youtube, ai, google)');
+    });
+    qInput.addEventListener('keydown', e=> { if(e.key==='Enter') searchBtn.click(); });
+
+    // Chat (simulated) - replace with serverless model later
+    const messages = document.getElementById('messages');
+    const chatInput = document.getElementById('chatInput');
+    const send = document.getElementById('send');
+    send.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keydown', e=> { if(e.key==='Enter') sendMessage(); });
+
+    function appendMsg(user, text){
+      const d = document.createElement('div');
+      d.className = 'msg ' + (user==='me' ? 'user' : 'bot');
+      d.textContent = text;
+      messages.appendChild(d);
+      messages.scrollTop = messages.scrollHeight;
+    }
+    function sendMessage(){
+      const t = chatInput.value.trim(); if(!t) return;
+      appendMsg('me', t); chatInput.value='';
+      setTimeout(()=> {
+        // basic simulated responses
+        const q = t.toLowerCase();
+        if(q.includes('hello')||q.includes('hi')) appendMsg('bot','হ্যালো! কিভাবে সাহায্য করতে পারি?');
+        else if(q.includes('hosting')) appendMsg('bot','Start with Cloudflare Pages or Netlify for free static hosting. Use Workers/Functions for APIs.');
+        else if(q.includes('design')) appendMsg('bot','Keep consistent spacing, readable typography, and strong CTA color contrast.');
+        else if(q.includes('html')) appendMsg('bot','Example: <html>... — I can provide a small snippet if you need.');
+        else appendMsg('bot','দারুণ প্রশ্ন — production এ আমি API (Hugging Face/OpenAI) ডেকে সম্পূর্ণ উত্তর দেব।');
+      }, 500 + Math.random()*600);
+    }
+
+    // Favorites: save sample list in localStorage
+    const favKey = 'fi_favorites';
+    function getFavs(){ try{ return JSON.parse(localStorage.getItem(favKey)||'[]'); }catch(e){return []} }
+    function setFavs(a){ localStorage.setItem(favKey, JSON.stringify(a)); }
+
+    document.getElementById('saveFav').addEventListener('click', ()=> {
+      const favs = getFavs();
+      // add current homepage as demo favorite
+      if(!favs.includes(location.href)){ favs.push(location.href); setFavs(favs); alert('Saved to Favorites'); }
+      else alert('Already in favorites');
+    });
+    document.getElementById('openFavorites').addEventListener('click', ()=> {
+      const favs = getFavs();
+      if(favs.length===0) return alert('No favorites saved yet');
+      favs.forEach(u=> window.open(u, '_blank', 'noopener'));
+    });
+
+    // quick actions
+    document.getElementById('openTop').addEventListener('click', ()=> {
+      const top = ['https://www.google.com','https://www.youtube.com','https://www.tiktok.com','https://www.instagram.com'];
+      top.forEach(u=> window.open(u,'_blank','noopener'));
+    });
+    document.getElementById('copyHome').addEventListener('click', async ()=> {
+      try{ await navigator.clipboard.writeText(location.href); alert('Home link copied'); } catch(e){ alert('Copy failed'); }
+    });
+
+    // open chat panel scroll behavior (openChat button)
+    document.getElementById('openChat').addEventListener('click', ()=> {
+      // on small screens scroll to chat box
+      const msg = document.getElementById('messages');
+      msg && msg.scrollIntoView({behavior:'smooth',block:'center'});
+      chatInput.focus();
+    });
+
+    // open all top in one click (safe)
+    document.getElementById('favAll').addEventListener('click', ()=> {
+      const top = ['https://www.google.com','https://www.youtube.com','https://www.facebook.com','https://www.instagram.com'];
+      top.forEach(u=> window.open(u,'_blank','noopener'));
+    });
+
+  </script>
+</body>
+</html>
